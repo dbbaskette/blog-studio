@@ -140,10 +140,10 @@ The six routes, fourteen capability modules, local continuity helpers, and porta
 
 | Next milestone | Estimated development tokens |
 |---|---:|
-| Complete route/discovery and clean-machine newcomer pilots | 12–22k |
 | Google Docs intake, review handoff, and return (first slice) | 15–25k |
+| Live Codex/Claude and signed-in newcomer pilots — run last | 12–22k original range |
 
-The repository bootstrap and M1–M4 guidance refinements are delivered. Reviews load selected checks and retain passage-level evidence; comprehensive feedback is about 22% smaller than after M3. M5 validates the full conversational experience. Development ranges are planning estimates, with overlapping pilot work excluded from additive totals. See the [progressive roadmap](docs/progressive-disclosure-roadmap.md) and [Google Docs roadmap](docs/google-docs-roadmap.md).
+The repository bootstrap and M1–M4 guidance refinements are delivered. Reviews load selected checks and retain passage-level evidence; comprehensive feedback is about 22% smaller than after M3. Live Codex/Claude validation is deferred to [M5 #9](https://github.com/dbbaskette/blog-studio/issues/9), with signed-in Mac setup in [I4 #8](https://github.com/dbbaskette/blog-studio/issues/8). Run these last, when the user is available for sign-in. Development ranges are planning estimates, with overlapping pilot work excluded from additive totals. See the [progressive roadmap](docs/progressive-disclosure-roadmap.md) and [Google Docs roadmap](docs/google-docs-roadmap.md).
 
 ## Verify and package
 

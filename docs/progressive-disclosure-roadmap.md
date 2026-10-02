@@ -82,7 +82,7 @@ This roadmap extends the existing package. It does not authorize publication, in
 | M5 Harness pilot and newcomer handoff | Exercise all six routes plus standalone voice setup inside the harness; keep the optional prompt generator aligned with the entry choices | M1–M4 | 12,000–22,000 | Direct chat and generated prompts reach the same workflow; attachments/URLs use real host tools; outline-only stops; interview asks one question; resume does not repeat setup; access failures are explicit |
 | **Original refinement estimate** | **Five milestones** | | **62,000–110,000** | **Measured pilot results update the estimates** |
 
-M1–M4 are implemented. I4/M5 have reproducible Tart/newcomer checks; signed-in live-harness acceptance remains open; original development ranges are historical planning estimates, not measured consumption. Roadmap estimates are not execution budgets or permission for additional services.
+M1–M4 are implemented. I4/M5 have reproducible Tart/newcomer checks. Per user direction, signed-in Mac and live Codex/Claude tests remain in issues #8/#9 and run last, after implementation work; original development ranges are historical planning estimates, not measured consumption. Roadmap estimates are not execution budgets or permission for additional services.
 
 ## Runtime targets after the roadmap
 
