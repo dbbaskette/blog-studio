@@ -61,17 +61,17 @@ These stages adapt to your request. A clear draft request can continue through a
 
 ## Token footprint
 
-Progressive disclosure keeps the full reference library available while selecting guidance for the current operation. The library contains approximately **166.2k estimated tokens**; a normal route reads a subset.
+Progressive disclosure keeps the full reference library available while selecting guidance for the current operation. The library contains approximately **168.3k estimated tokens**; a normal route reads a subset.
 
 | Route | Current guidance estimate | Target after roadmap |
 |---|---:|---:|
-| Outline with sources | 6.4k | 2–3k |
-| First draft with sources | 12.9k | 3–5k |
-| Quick edit | 10.0k | 2.5–4k |
-| Voice setup | 7.0k | 2–3.5k |
-| Comprehensive review | 12.3k | 4–6k |
+| Outline with sources | 6.8k | 2–3k |
+| First draft with sources | 13.4k | 3–5k |
+| Quick edit | 10.4k | 2.5–4k |
+| Voice setup | 7.4k | 2–3.5k |
+| Comprehensive review | 12.8k | 4–6k |
 
-The installed bootstrap is approximately **918 tokens**. Route figures include it plus the selected repository guidance; the full library total excludes the bootstrap. Downloading that library does not load it into context.
+The installed bootstrap is approximately **1,018 tokens**. Route figures include it plus the selected repository guidance; the full library total excludes the bootstrap. Downloading that library does not load it into context.
 
 Estimates use characters ÷ 4 and count each selected instruction file once. They include workspace guidance and exclude author material, generated prose, conversation history, and host/tool context. They are planning estimates rather than total billed usage. Targets are **planned refinements**, and already loaded text can remain in the conversation.
 
@@ -98,6 +98,18 @@ The administrator creates a private remote and local clone. Members with existin
 
 Update to runtime **1.1.0** using the trusted installer. No actual team repo is created by downloading or installing the skill. See [Team Hub usage](docs/team-hub.md) for setup, sharing, and the current verification boundary.
 
+## Your content and outside services
+
+Private content stays in your existing harness and, when selected, your private
+Team Hub. Borrowed research/media suggestions do not authorize sending drafts,
+voice samples, notes, or team context to additional services. Public searches
+use nonconfidential terms; requested document posting sends only the selected
+content to its intended audience. No telemetry or hidden upload client is bundled.
+
+Your harness/model provider and GitHub still process data under your account
+settings. See the [data exposure review](docs/privacy-review.md) for the checked
+surfaces, safeguards, and limits.
+
 ## Get started
 
 **From this repository:** open it in your harness and ask:
@@ -120,7 +132,7 @@ Then visit `http://127.0.0.1:8896/blog-studio.html`.
 
 ## What's implemented and what's next
 
-The six routes, fourteen capability modules, local continuity helpers, and portable packages are implemented. **45 deterministic tests cover local helpers, guidance refresh, and managed installation**, alongside package integrity and extracted-bundle portability checks. The Mac launcher and installer are implemented; a clean-machine sign-in pilot and actual discovery/writing in both harnesses remain validation gaps.
+The six routes, fourteen capability modules, local continuity helpers, and portable packages are implemented. **87 deterministic tests cover local helpers, Team Hub, privacy boundaries, guidance refresh, and managed installation**, alongside package integrity and extracted-bundle portability checks. The Mac launcher and installer are implemented; a clean-machine sign-in pilot and actual discovery/writing in both harnesses remain validation gaps.
 
 | Next milestone | Estimated development tokens |
 |---|---:|

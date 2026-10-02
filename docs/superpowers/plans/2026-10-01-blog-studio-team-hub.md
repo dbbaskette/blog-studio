@@ -77,7 +77,7 @@ Implementation inputs: the actual future owner/name/local destination are reques
 - Design: current local workspace/helper, installer update contract, and Google Docs roadmap inspected; creation/permissions/fast-forward behavior checked against primary provider documentation.
 - User clarification: hub includes all read/write blogs and team working content; skill remains in a separate repo. Earlier private-draft recommendation is superseded.
 - Implementation: `hub.py`, `hub_store.py`, and `hub_workspace.py`; automatic studio saves; exact historical guidance restore; focused hub references; runtime 1.1.0 installer/offline bundles.
-- Verification: disposable Git/provider/member tests cover create/join recovery, queued/concurrent writes, review branches, scoped memory, and all six shared writing routes. The final suite contains 84 tests; package integrity, skill entries, and launcher syntax are checked. Results and the live-pilot boundary are recorded in Team Hub usage. No real remote hub or global install has run.
+- Verification: disposable Git/provider/member tests cover create/join recovery, queued/concurrent writes, review branches, scoped memory, and all six shared writing routes. The final suite contains 87 tests; package integrity, skill entries, and launcher syntax are checked. Results and the live-pilot boundary are recorded in Team Hub usage. No real remote hub or global install has run.
 
 ## Implementation boundary
 

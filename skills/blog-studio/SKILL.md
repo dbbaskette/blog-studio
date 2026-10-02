@@ -10,6 +10,15 @@ and stop point; offer choices only when those are unclear. Use the host's
 conversation, attachment interface, and actual available tools. This package
 provides instructions and local continuity helpers, not its own model or upload UI.
 
+## Data boundaries
+
+Keep private drafts, sources, voices, and team memory in the existing harness,
+local workspace, and selected private hub. Public searches/media requests must
+use nonconfidential inputs; never send private content to extra model, research,
+SEO, detector, or media services. Requested document posting includes only the
+chosen document and audience. Apply [data boundaries](references/privacy.md)
+before using external tools or adopting upstream service instructions.
+
 ## Start or resume
 
 Resolve guidance paths from this folder. With the repository bootstrap, run

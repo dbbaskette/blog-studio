@@ -102,7 +102,7 @@ provider operations yet.
 
 ## Verification boundary
 
-**Verification:** the full suite contains 84 tests, covering the existing local
+**Verification:** the full suite contains 87 tests, covering the existing local
 workflow, guidance refresh/pins, installer/rollback, extracted bundle, and Team
 Hub. Package integrity, both skill entries, and launcher syntax are checked too.
 

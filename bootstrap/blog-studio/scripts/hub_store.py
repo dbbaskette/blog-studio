@@ -125,6 +125,10 @@ def canonical_repository(value):
 def environment():
     env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
     env['GIT_TERMINAL_PROMPT'] = '0'
+    # This runtime supports GitHub.com only; inherited CLI host/debug overrides
+    # must not redirect hub metadata or enable sensitive diagnostic output.
+    env['GH_HOST'] = 'github.com'
+    env.pop('GH_DEBUG', None)
     return env
 
 
@@ -146,7 +150,10 @@ class GitHub:
     """Provider boundary. Tests substitute this object, never sign in or create real repos."""
     def call(self, *args, allow_missing=False):
         try:
-            result = subprocess.run(['gh', *args], capture_output=True, env=environment(), timeout=45)
+            command = ['gh', *args]
+            if args and args[0] == 'api':
+                command += ['--hostname', 'github.com']
+            result = subprocess.run(command, capture_output=True, env=environment(), timeout=45)
         except (OSError, subprocess.TimeoutExpired) as exc:
             raise TransportError('GitHub CLI is unavailable or timed out. Check your own account access.') from exc
         if result.returncode:
