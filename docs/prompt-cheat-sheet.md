@@ -151,6 +151,6 @@ Google version milestone names are currently manual: in the Doc, use
 **File → Version history → Name current version**. A milestone name does not
 confirm freshness or save anything to the Hub.
 
-[Back to README](../README.md) · [Installation](installation.md) ·
+[Project README](https://github.com/dbbaskette/blog-studio#readme) · [Installation](installation.md) ·
 [Full first-session guide](new-user-guide.md) · [Google Docs details](google-docs.md) ·
 [Team Hub details](team-hub.md)
