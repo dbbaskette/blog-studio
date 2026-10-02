@@ -1,6 +1,6 @@
 ---
 name: blog-studio
-description: Guide a blog from an existing draft, topic, outline, source material, or author interview through writing and focused review. Build reusable author voices and resume saved article work without repeating setup. Use for conversational blog writing help or voice-profile setup.
+description: Guide a blog from an existing draft, topic, outline, source material, or author interview through writing and focused review. Build reusable author voices and resume saved article work without repeating setup. Use for conversational blog writing help, voice-profile setup, or shared Team Hub memory.
 ---
 
 # Blog Studio
@@ -29,6 +29,10 @@ question widget. Read [intake](references/intake.md) when material is supplied.
 Use a saved voice, build one, follow requested tone, or preserve the draft's
 voice. Read [voice setup](references/voice-flow.md) only when choosing, building,
 or updating voice is needed. Voice setup is also available as a standalone task.
+
+For a Team Hub request or a workspace with `.team-hub.json`, read the
+[team router](references/hub/workflow.md). Its private repository stores shared
+read/write work; approved skill instructions stay in this repository.
 
 ## Load capabilities as needed
 
