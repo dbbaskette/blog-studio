@@ -10,7 +10,9 @@ bash scripts/ci/check.sh /path/to/python3 /path/to/results
 
 The repository workflow runs the same checks on macOS and Linux with Python
 3.11 and 3.13. Existing self-hosted runner labels and the workflow filename are
-retained for compatibility with the configured external service.
+retained for compatibility with the configured external service. A temporary,
+read-only Linux readiness check also keeps the already-active trusted-base
+workflow usable during this transition; it performs no provisioning.
 
 VM provisioning, runner registration, queue monitoring, credential handling,
 resource limits and machine cleanup belong to the separate shared CI
