@@ -65,6 +65,19 @@ class ComputerTests(unittest.TestCase):
         ):
             self.assertIsNone(computer.probe(['fixture']))
 
+    def test_bundled_codex_sign_in_uses_a_command_that_exists(self):
+        bundled = '/Applications/Synthetic app/codex'
+        with (
+            patch.object(
+                computer, 'cli_path', side_effect=lambda name: bundled if name == 'codex' else None
+            ),
+            patch.object(computer, 'git_path', return_value=None),
+            patch.object(computer.shutil, 'which', return_value=None),
+            patch.object(computer, 'probe', return_value=(1, 'Not logged in')),
+        ):
+            found = computer.report()
+        self.assertIn("Run '/Applications/Synthetic app/codex' login", computer.describe(found))
+
     def test_apple_git_placeholder_does_not_open_developer_setup(self):
         with (
             patch.object(computer.sys, 'platform', 'darwin'),

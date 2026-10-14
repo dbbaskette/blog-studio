@@ -33,9 +33,10 @@ No credentials or private team content were copied into them.
 - `python -m unittest discover -s tests -p test_installation.py`: 38 passed,
   including launchers, fallback Python, ownership, update/rollback/removal and
   running-page protection.
-- `python -m unittest discover -s tests -p test_startup.py`: 6 passed, including
+- `python -m unittest discover -s tests -p test_startup.py`: 7 passed, including
   the real start process, graceful SIGTERM, remembered workspace, missing tools,
-  sign-in limits, and Apple’s unconfigured Git placeholder.
+  sign-in limits, a usable login command for bundled Codex, and Apple’s
+  unconfigured Git placeholder.
 - `node scripts/ci/check-management.cjs`: passed, including rendered computer
   checks and next-step instructions. The existing page-opening test also passed
   with a disposable application-data folder.

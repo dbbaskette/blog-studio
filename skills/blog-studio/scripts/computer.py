@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 from pathlib import Path
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -93,6 +94,7 @@ def report(home=None, sign_in=True):
             'Install Codex or Claude Code, open it and sign in, then check again.',
         )
     if codex:
+        login = 'codex' if shutil.which('codex') else shlex.quote(codex)
         add(
             'codex',
             'Codex',
@@ -104,7 +106,7 @@ def report(home=None, sign_in=True):
             else 'CLI found; sign-in could not be confirmed.',
             ''
             if codex_signed
-            else 'Run codex login, then check again.'
+            else 'Run ' + login + ' login, then check again.'
             if codex_signed is False
             else 'Open Codex and sign in before starting a blog.',
         )
