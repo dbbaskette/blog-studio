@@ -1454,7 +1454,8 @@ def dispatch(root, route, data):
         if route == 'team-share-mode':
             if data.get('share') not in ('decision', 'asked'):
                 raise ValueError('Choose a listed sharing mode.')
-            studio.write_json(root / '.team-sync.json', {'share': data['share']})
+            with studio.locked(root):
+                studio.write_json(root / '.team-sync.json', {'share': data['share']})
             return status(root)
         return refresh(root, push=True)
     if route.startswith('team-'):

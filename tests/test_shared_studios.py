@@ -230,7 +230,14 @@ class TeamTests(unittest.TestCase):
         os.environ['BLOG_STUDIO_DATA'] = str(self.base / 'two')
         teams.action(other, ident, 'takeover')
         os.environ['BLOG_STUDIO_DATA'] = str(self.base / 'one')
+        runner = blog_runner.engine(self.root)
+        runner.current = ident
+        runner.keep_local(ident, {'enabled': True, 'status': 'working'})
         teams.refresh(self.root)
+        self.assertTrue(runner.stop.is_set())
+        self.assertFalse(runner.local(ident)['enabled'])
+        runner.current = None
+        blog_runner.ENGINES.pop(str(self.root), None)
         kept = gitstate.kept(teams.space(self.root), ident)
         self.assertTrue(kept)
         self.assertIn(

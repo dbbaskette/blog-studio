@@ -43,6 +43,8 @@ def space(root):
 
 def preference(root):
     local = support.read_json(root / '.team-sync.json', {})
+    if not isinstance(local, dict):
+        local = {}
     shared, _ = studios_config.read()
     chosen = local.get('share', shared.get('share', 'decision'))
     return chosen if chosen in gitstate.SHARE else 'decision'
@@ -98,6 +100,19 @@ def _learn(root, found, at):
         except ValueError:
             raise ValueError('A shared blog has an unreadable driver record.') from None
         if team.ours(found, current) and not team.ours(found, remote):
+            import blog_runner
+
+            runner = blog_runner.ENGINES.get(str(root))
+            if runner is not None:
+                state = runner.local(ident)
+                state.update(
+                    enabled=False,
+                    status='needs-attention',
+                    error='This blog was taken over on another computer. Unshared writing is kept in Git recovery refs.',
+                )
+                runner.keep_local(ident, state)
+                if runner.current == ident:
+                    runner.stop.set()
             kept = gitstate.set_aside(found, ident, at)
             state = team.kept('taken')
             state[str(folder)] = {**remote.get('driver', {}), 'at': studio.now(), 'kept': kept}
@@ -120,7 +135,7 @@ def refresh(root, push=False):
     # Upstream holds this lock only to inspect/replay the clone, never during fetch/push.
     report = gitstate.sync(found, push=push, before=lambda at: _learn(root, found, at), held=held)
     with held, internal():
-        studio.write_json(root / '.team-sync.json', {'share': found.share, 'report': report})
+        studio.write_json(root / '.team-sync.json', {'share': preference(root), 'report': report})
     return report
 
 

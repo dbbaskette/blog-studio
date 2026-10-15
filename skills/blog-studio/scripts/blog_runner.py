@@ -5,7 +5,6 @@ import difflib
 from pathlib import Path
 import re
 import threading
-import time
 from types import SimpleNamespace
 import uuid
 
@@ -599,6 +598,7 @@ class Engine:
         self.stop = threading.Event()
         self.current = None
         self.thread = None
+        self.sync_thread = None
 
     def local(self, ident):
         path = studio.inside(self.root, '.blog-runs', studio.identifier(ident) + '.json')
@@ -744,17 +744,31 @@ class Engine:
         finally:
             self.current = None
 
-    def serve(self):
-        last_sync = 0
-        while not self.closed.is_set():
-            from team_workspace import space, refresh
+    def sync_team(self):
+        from team_workspace import refresh
 
-            if space(self.root) and time.monotonic() - last_sync > 60:
-                last_sync = time.monotonic()
-                try:
-                    refresh(self.root)
-                except (ValueError, OSError):
-                    pass  # Status and explicit Share now keep a failure visible.
+        while not self.closed.is_set():
+            try:
+                refresh(self.root)
+            except (ValueError, OSError) as exc:
+                # A failed background check remains visible until a successful one.
+                from team_workspace import space, internal
+                from studio_sync import support
+
+                found = space(self.root)
+                if found:
+                    with support.locked(found.repo / '.git/blog-studio.lock'), internal():
+                        prior = support.read_json(self.root / '.team-sync.json', {})
+                        prior = prior if isinstance(prior, dict) else {}
+                        studio.write_json(
+                            self.root / '.team-sync.json',
+                            {**prior, 'report': {'shared': False, 'notice': str(exc)[:500]}},
+                        )
+            if self.closed.wait(60):
+                return
+
+    def serve(self):
+        while not self.closed.is_set():
             folder = studio.inside(self.root, '.blog-runs')
             for path in sorted(folder.glob('*.json')) if folder.exists() else []:
                 if self.closed.is_set():
@@ -770,6 +784,11 @@ class Engine:
             self.wake.clear()
 
     def start(self):
+        from team_workspace import space
+
+        if space(self.root):
+            self.sync_thread = threading.Thread(target=self.sync_team, daemon=True)
+            self.sync_thread.start()
         self.thread = threading.Thread(target=self.serve, daemon=True)
         self.thread.start()
 
@@ -779,6 +798,8 @@ class Engine:
         self.wake.set()
         if self.thread:
             self.thread.join(timeout=5)
+        if self.sync_thread:
+            self.sync_thread.join(timeout=5)
 
 
 def engine(root):
