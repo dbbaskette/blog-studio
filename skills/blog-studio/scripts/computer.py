@@ -145,6 +145,21 @@ def report(home=None, sign_in=True):
             else 'Blog Studio records Hub saves with your Hub identity. Git name and email are only needed for commits you make yourself. Run gh auth status to check Hub access.',
             True,
         )
+    known_identity = bool(git) and all(
+        values.get(key) and values[key][0] == 0 and values[key][1] for key in ('name', 'email')
+    )
+    add(
+        'team',
+        'Studios repository (optional)',
+        'ready' if known_identity else 'optional',
+        'Git and a commit identity are ready.'
+        if known_identity
+        else 'Team sharing needs Git with your name and email configured.',
+        ''
+        if known_identity
+        else 'Install Git if needed, then set user.name and user.email in your terminal. Repository access uses your existing Git credentials.',
+        True,
+    )
     import studios_config
 
     shared, problem = studios_config.read()

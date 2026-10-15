@@ -14,6 +14,9 @@ companion Training Studio document in PR #68.
   malformed files and credential refusal; two-clone claims, handover/takeover,
   offline retry, manual sharing, preserved recovery refs, selected migration,
   HTTP workspace switching, local-edit protection and publication guards.
+- All 152 Google regression tests pass after adding shared-layout discovery and
+  the driver guard to remote-write entry points. The additional shared-workspace
+  Google-driver test passes without contacting Google.
 - `node scripts/ci/check-management.cjs`: page decisions, dialogs, controls,
   event wiring and element checks pass.
 - `python3 scripts/acceptance/studios-journey.py --run-directory <new-directory>

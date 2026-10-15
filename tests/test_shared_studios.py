@@ -378,6 +378,24 @@ class TeamPageTests(unittest.TestCase):
             if getattr(httpd, 'team_runner_lock', None) is not None:
                 release_lock(httpd.team_runner_lock)
 
+    def test_google_linked_documents_follow_the_same_driver(self):
+        import google_drive
+
+        found = self.create()
+        ident = found['id']
+        folder, record = studio.item(self.root, 'articles', ident)
+        record['google'] = {
+            'baselines': {'draft': {'document': {'document_id': 'SyntheticDocument'}}}
+        }
+        studio.persist(folder, 'articles', record)
+        teams.saved(self.root, ident)
+        self.assertIn('SyntheticDocument', google_drive.linked_documents(self.root))
+        google_drive.require_linked(self.root, 'SyntheticDocument')
+        os.environ['BLOG_STUDIO_DATA'] = str(self.base / 'two')
+        other = teams.join(str(self.remote))
+        with self.assertRaisesRegex(ValueError, 'another computer'):
+            google_drive.require_linked(other, 'SyntheticDocument')
+
     def test_external_edits_are_preserved_and_publication_requires_approval(self):
         found = self.create()
         ident = found['id']
