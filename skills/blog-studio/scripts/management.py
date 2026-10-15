@@ -1426,42 +1426,23 @@ def dispatch(root, route, data):
             brand_skill.configure(data) if route == 'brand-configure' else brand_skill.install(data)
         )
     if route == 'team-join':
-        if set(data) - {'repository', 'branch', 'share', 'for_all_studios'}:
+        if set(data) - {'repository', 'branch', 'share'}:
             raise ValueError('Unknown team setting.')
-        import studios_config
-
         from blog_runner import engine
 
         if engine(root).current:
             raise ValueError('Stop the current writing step before joining a team repository.')
-        chosen = status(root)
         repository = data.get('repository', '')
         branch, share = data.get('branch', 'main'), data.get('share', 'decision')
         target = join(repository, branch, share)
-        problem = None
-        if data.get('for_all_studios') is True:
-            changes = {}
-            team_changes = {
-                key: value
-                for key, value in {'repository': repository, 'branch': branch}.items()
-                if value != chosen.get(key)
-            }
-            if team_changes:
-                changes['team'] = team_changes
-            if share != chosen.get('share'):
-                changes['share'] = share
-            if changes:
-                try:
-                    studios_config.update(changes)
-                except ValueError as exc:
-                    problem = str(exc)
-        return {**status(target), 'switch_workspace': str(target), 'shared_problem': problem}
+        return {**status(target), 'switch_workspace': str(target)}
     if route in ('team-sync', 'team-share-mode'):
         if route == 'team-share-mode':
             if data.get('share') not in ('decision', 'asked'):
                 raise ValueError('Choose a listed sharing mode.')
-            with studio.locked(root):
-                studio.write_json(root / '.team-sync.json', {'share': data['share']})
+            import studios_config
+
+            studios_config.update({'share': data['share']})
             return status(root)
         return refresh(root, push=True)
     if route.startswith('team-'):

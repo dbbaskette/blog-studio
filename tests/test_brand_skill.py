@@ -261,6 +261,40 @@ class BrandSkillTests(unittest.TestCase):
                 brands.snapshot(identity, variant)
         self.assertEqual(brands.snapshot('fictional')['variant'], 'light')
 
+    def test_brand_source_lives_only_in_shared_config_and_refreshes_on_next_read(self):
+        import studios_config
+
+        _, shown = self.checked()
+        private = studio.read_json(brands._path())
+        self.assertNotIn('repository', private)
+        self.assertNotIn('release', private)
+        self.assertEqual(studios_config.read()[0]['brand']['repository'], shown['repository'])
+        studios_config.update({'brand': {'release': 'v1.1.0'}})
+        fresh = brands.status()
+        self.assertEqual(fresh['release'], 'v1.1.0')
+        self.assertIsNone(fresh['checked'])
+        with self.assertRaisesRegex(ValueError, 'changed in another studio'):
+            brands.configure(
+                {
+                    'repository': shown['repository'],
+                    'release': '',
+                    'shared_before': shown['shared_before'],
+                }
+            )
+        self.assertEqual(studios_config.read()[0]['brand']['release'], 'v1.1.0')
+
+    def test_local_skill_choice_preserves_unmigrated_values_when_shared_file_is_invalid(self):
+        folder = self.skill()
+        legacy = {'repository': 'https://example.invalid/legacy-brand.git', 'release': 'v1.4.0'}
+        studio.write_json(brands._path(), legacy)
+        self.config.write_text('{invalid')
+        brands.configure({'runtime': str(folder)})
+        saved = studio.read_json(brands._path())
+        self.assertEqual(saved['repository'], legacy['repository'])
+        self.assertEqual(saved['release'], legacy['release'])
+        self.assertEqual(saved['runtime'], str(folder))
+        self.assertEqual(self.config.read_text(), '{invalid')
+
     def test_confirmed_install_runs_real_release_installer_in_synthetic_home(self):
         _, found = self.checked()
         with self.assertRaises(ValueError):

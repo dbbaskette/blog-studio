@@ -10,6 +10,7 @@ import threading
 import time
 
 import studio
+import studios_config
 from studio_brand import brand, companion, source, settings
 from studio_sync.support import data_root, locked
 
@@ -28,17 +29,43 @@ def _path():
 
 
 def _read():
+    notice, migration_problem = studios_config.migrate()
+    shared, problem = studios_config.read()
     try:
         value = studio.read_json(_path()) if _path().is_file() else {}
         if not isinstance(value, dict):
             raise ValueError('Invalid local brand settings.')
+        # checked is an observation about a release, not another preference.
+        preferences = shared.get('brand', {})
+        value['shared_before'] = {key: preferences.get(key) for key in ('repository', 'release')}
+        value.update({key: preferences.get(key) or '' for key in ('repository', 'release')})
+        checked = value.get('checked') or {}
+        selection = studio.digest(json.dumps([value['repository'], value['release']]).encode())
+        if checked.get('selection') != selection:
+            value.pop('checked', None)
+        value['problem'] = problem or migration_problem
+        value['migration_notice'] = notice
         return value
     except (OSError, ValueError):
         return {'problem': 'Brand settings could not be read. Check and save them again.'}
 
 
 def _save(value):
-    studio.write_json(_path(), value)
+    private = {
+        key: member
+        for key, member in value.items()
+        if key not in ('repository', 'release', 'problem', 'migration_notice', 'shared_before')
+    }
+    # Failed migration must not lose legacy shared values during a local skill choice.
+    previous = studio.read_json(_path()) if _path().is_file() else {}
+    private.update(
+        {
+            key: member
+            for key, member in previous.items()
+            if key in ('repository', 'release', 'brand', 'variant')
+        }
+    )
+    studio.write_json(_path(), private)
     _path().chmod(0o600)
 
 
@@ -73,6 +100,8 @@ def status(refresh=False):
         'version': chosen['version'] if chosen else None,
         'problem': problem,
         'job': dict(_JOB or {}),
+        'checked': kept.get('checked'),
+        'shared_before': kept.get('shared_before', {'repository': None, 'release': None}),
     }
 
 
@@ -124,6 +153,8 @@ def configure(data):
 
 
 def _configure(data):
+    data = dict(data)
+    before = data.pop('shared_before', None)
     if set(data) not in ({'repository', 'release'}, {'runtime'}):
         raise ValueError('Save either the brand repository and release or an installed skill.')
     with locked(_path().with_suffix('.lock')):
@@ -138,10 +169,29 @@ def _configure(data):
             repository = settings.check_repository(data['repository'])
             release = settings.check_release(data['release'], repository)
             checked = source.check(repository, release, home()) if repository else {}
+            current, _ = studios_config.read()
+            previous_brand = current.get('brand', {})
+            if before is None:
+                before = {key: previous_brand.get(key) for key in ('repository', 'release')}
+            if not isinstance(before, dict) or set(before) != {'repository', 'release'}:
+                raise ValueError('Reload the brand settings before saving.')
+            values = {
+                'repository': checked.get('repository', ''),
+                'release': checked.get('release') or '',
+            }
+            changes = {
+                key: value for key, value in values.items() if (before.get(key) or '') != value
+            }
+            studios_config.update({'brand': changes} if changes else {}, expected={'brand': before})
             previous.update(
-                repository=checked.get('repository', ''),
-                release=checked.get('release') or '',
-                checked=checked.get('chosen'),
+                checked={
+                    **checked['chosen'],
+                    'selection': studio.digest(
+                        json.dumps([values['repository'], values['release']]).encode()
+                    ),
+                }
+                if checked
+                else None,
             )
         _save(previous)
 

@@ -35,8 +35,8 @@ on this computer, from their last saved stage.
 The page follows Training Studio’s current layout: **Home**, **Blogs**,
 **Status** and **Settings**, with the same glass navigation and toolbar, progress
 stages, paper documents and decision sheets. Home groups **Needs you**, **In
-progress** and **Finished**. Settings saves writing defaults on this computer
-for future page runs; existing runs keep their choices. **Status → Check this
+progress** and **Finished**. Settings edits shared values for all studios and local writing preferences for
+future blogs; existing runs keep their choices. **Status → Check this
 computer** shares setup’s read-only checks and next steps. You can run the same
 report with `sh ~/.local/share/blog-studio/studio check`.
 
@@ -83,8 +83,9 @@ that contract when settings or installed skills change, including when resumed
 on another computer. Brand naming rules and visual guidance stay separate from
 the author's voice; a logo or palette does not imply a company tone.
 
-These settings and local skill paths live in Blog Studio's per-user data folder,
-outside the team repository. Only the selected contract travels with a blog.
+The brand repository, release and identity live in the shared settings file.
+Installed skill paths and release-check observations stay in Blog Studio's local
+data folder. Only the selected contract travels with a blog.
 
 ## Run and review
 
@@ -149,8 +150,12 @@ Join from **Settings** or **Status**. The page switches to its own team clone.
 Blogs have one driver, with **Take this blog**, **Take over**, **Hand over**, and
 numbered **Publish revision** controls. **Share now** retries pending decisions.
 See [team workspaces and migration](team-workspace.md) and the
-[shared studios defaults](shared-studios.md). Existing local settings win over
-shared defaults; writing never requires a shared config file.
+[shared studios settings](shared-studios.md). Settings saves shared values to
+that file directly, with no local override or additional consent toggle. Missing
+or unreadable shared settings use built-in defaults; writing remains available.
+Legacy local copies migrate only to missing shared members, then are removed.
+An existing shared value is kept and reported. An unreadable file is preserved
+and shared-value saves are refused until it can be read.
 
 ## Saved work and teams
 
