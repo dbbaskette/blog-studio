@@ -60,6 +60,39 @@ class ConfigTests(unittest.TestCase):
         self.assertIn('"future" : { "n": 1e3 }', self.config.read_text())
         self.assertEqual(studios_config.read()[0]['team']['branch'], 'main')
 
+    def test_new_skill_runs_use_defaults_and_existing_runs_keep_their_choices(self):
+        root = self.base / 'writing'
+        studio.initialize(root)
+        self.config.write_text(
+            '{"schema":1,"assistant":{"agent":"claude"},"person":{"name":"First Author"}}'
+        )
+        args = studio.parser().parse_args(
+            [
+                '--root',
+                str(root),
+                'run',
+                'create',
+                '--title',
+                'Synthetic defaults',
+                '--audience',
+                'Authors',
+                '--goal',
+                'Explain synthetic defaults',
+                '--research',
+                'none',
+                '--stop',
+                'outline',
+            ]
+        )
+        first = blog_runner.command(root, args)
+        self.assertEqual(first['engine'], 'claude')
+        self.assertEqual(studio.item(root, 'articles', first['id'])[1]['author'], 'First Author')
+        self.config.write_text(
+            '{"schema":1,"assistant":{"agent":"codex"},"person":{"name":"Second Author"}}'
+        )
+        self.assertEqual(blog_runner.survey(root, first['id'])['engine'], 'claude')
+        self.assertEqual(studio.item(root, 'articles', first['id'])[1]['author'], 'First Author')
+
     def test_credentials_and_invalid_updates_preserve_file(self):
         self.config.write_text('{"schema":1,"future":"kept"}')
         before = self.config.read_bytes()

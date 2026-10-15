@@ -323,6 +323,10 @@ def save(root, directory, record, run, event):
 
 
 def create(root, data, approval='conversation'):
+    data = dict(data)
+    defaults = settings(root)['defaults']
+    data.setdefault('engine', defaults['engine'])
+    data.setdefault('author', defaults['author'])
     allowed = {
         'id',
         'title',
@@ -975,7 +979,7 @@ def add_parser(groups):
     create_cmd.add_argument(
         '--stop', choices=('outline', 'draft', 'review', 'package'), default='package'
     )
-    create_cmd.add_argument('--engine', choices=('codex', 'claude'), default='codex')
+    create_cmd.add_argument('--engine', choices=('codex', 'claude'))
     create_cmd.add_argument('--seconds', type=int, default=600)
     create_cmd.add_argument('--source', action='append', default=[])
     create_cmd.add_argument('--mode', choices=MODES, default='write')
