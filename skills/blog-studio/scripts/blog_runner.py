@@ -206,6 +206,8 @@ def inputs(root, record, run):
         'research_policy': record['research_policy'],
         'guidance': (record.get('guidance') or {}).get('revision'),
     }
+    if run.get('brand'):
+        payload['brand'] = run['brand']
     if len(json.dumps(payload)) > 300_000:
         raise ValueError(
             'Selected context is too large for one writing job. Use focused excerpts in chat.'
@@ -293,6 +295,9 @@ def survey(root, ident):
         'brief': run['brief'],
         'existing': run['existing'],
         'mode': run.get('mode', 'review' if run['existing'] else 'write'),
+        'brand': {key: run['brand'][key] for key in ('skill', 'version', 'brand', 'variant')}
+        if run.get('brand')
+        else None,
         'decisions': run.get('decisions', [])[-30:],
     }
 
@@ -326,6 +331,11 @@ def create(root, data, approval='conversation'):
     defaults = settings(root)['defaults']
     data.setdefault('engine', defaults['engine'])
     data.setdefault('author', defaults['author'])
+    if 'brand' not in data:
+        import brand_skill
+
+        for key, value in brand_skill.defaults().items():
+            data.setdefault(key, value)
     allowed = {
         'id',
         'title',
@@ -341,6 +351,8 @@ def create(root, data, approval='conversation'):
         'seconds',
         'mode',
         'manuscript',
+        'brand',
+        'variant',
     }
     if set(data) - allowed:
         raise ValueError('Unknown new-blog field.')
@@ -384,6 +396,9 @@ def create(root, data, approval='conversation'):
         'goal': text(data.get('goal', ''), 'goal', required=True),
         'audience': text(data.get('audience', ''), 'audience', 500, required=True),
     }
+    import brand_skill
+
+    selected_brand = brand_skill.snapshot(data.get('brand', ''), data.get('variant', ''))
     title = text(data.get('title', ''), 'title', 500, required=not data.get('id'))
     profile = data.get('profile') or None
     if profile:
@@ -456,6 +471,8 @@ def create(root, data, approval='conversation'):
         'pipeline': pipeline,
         'stages': {},
     }
+    if selected_brand:
+        run['brand'] = selected_brand
     inputs(root, record, run)  # Refuse unusable context before creating a partial blog.
     if not data.get('id'):
         directory.mkdir()
@@ -657,6 +674,13 @@ class Engine:
         }
 
     def once(self, ident):
+        import brand_skill
+
+        with brand_skill.using(quiet=True) as available:
+            if available:
+                return self._once(ident)
+
+    def _once(self, ident):
         if not self.local(ident).get('enabled'):
             return
         from team_workspace import before
@@ -860,11 +884,16 @@ def options(root):
         except ValueError:
             agents[name] = False
 
+    import brand_skill
+
+    brand = brand_skill.status()
+    brand['default'] = brand_skill.defaults(brand)
     return {
         'profiles': records('profiles'),
         'sources': records('sources'),
         'agents': agents,
         'settings': settings(root),
+        'brand': brand,
     }
 
 
@@ -992,7 +1021,17 @@ def add_parser(groups):
         dest='action', required=True
     )
     create_cmd = commands.add_parser('create')
-    for name in ('title', 'author', 'audience', 'goal', 'tone', 'profile', 'id'):
+    for name in (
+        'title',
+        'author',
+        'audience',
+        'goal',
+        'tone',
+        'profile',
+        'id',
+        'brand',
+        'variant',
+    ):
         create_cmd.add_argument('--' + name, required=name in ('audience', 'goal'))
     create_cmd.add_argument(
         '--research', choices=('none', 'supplied-only', 'web-allowed'), default='supplied-only'

@@ -7,6 +7,11 @@ changes for authors first, then what changes for maintainers.
 
 **For authors**
 
+- Add a brand skill's repository and release in Settings, select an installed
+  skill, and install a checked release after confirmation, like Training Studio.
+  Choose a brand and variant for each new blog; existing blogs retain their exact
+  brand guides and keep the author's voice separate.
+
 - Join one team repository alongside Training and Presentation Studio. Blogs use
   readable folders, one confirmed driver, explicit takeover/handover, decision
   sharing and numbered revisions. Selected legacy Hub work can be migrated while

@@ -1419,6 +1419,12 @@ def _dispatch(root, route, data):
 def dispatch(root, route, data):
     from team_workspace import space, before, saved, status, refresh, action, join
 
+    if route in ('brand-configure', 'brand-install'):
+        import brand_skill
+
+        return (
+            brand_skill.configure(data) if route == 'brand-configure' else brand_skill.install(data)
+        )
     if route == 'team-join':
         if set(data) - {'repository', 'branch', 'share', 'for_all_studios'}:
             raise ValueError('Unknown team setting.')
@@ -1554,14 +1560,39 @@ def whole(value):
 def view(root, name, query):
     """Read-only desk views by name. Returns None for an unknown view."""
     arg = lambda key, default=None: query.get(key, [default])[0]
+    if name == 'brand':
+        import brand_skill
+
+        return brand_skill.status()
     if name == 'team':
         from team_workspace import status
 
         return status(root)
     if name == 'computer':
         import computer
+        import brand_skill
 
-        return computer.report()
+        result = computer.report()
+        brand = brand_skill.status(refresh=True)
+        result['brand'] = brand
+        result['checks'].append(
+            {
+                'key': 'brand',
+                'label': 'Brand skill (optional)',
+                'optional': True,
+                'status': 'ready' if brand['brands'] and not brand['problem'] else 'optional',
+                'detail': brand['problem']
+                or (
+                    'Using ' + brand['name'] + '.'
+                    if brand['name']
+                    else 'No brand skill was found. Blogs can still be written without one.'
+                ),
+                'next_step': 'Choose an installed skill or its repository in Settings.'
+                if not brand['brands'] or brand['problem']
+                else '',
+            }
+        )
+        return result
     if name in ('runs', 'run', 'run-options', 'run-file', 'run-settings'):
         import blog_runner
 

@@ -34,6 +34,35 @@ worker, not a live assistant.
 | Compare a revision | Earlier approval exists | Exact approved snapshot and current diff | Document and Hub round-trip |
 | Server changes while reading | Review page open | Existing document retained, approval disabled | Browser and DOM |
 
+## Brand skill inputs
+
+The 2026-10-15 brand addition uses only synthetic skills, tagged local Git
+repositories, disposable homes and a scripted writer. It never starts a provider
+or installs an organisation's real brand into a fixture.
+
+- `.venv/bin/python -m unittest discover -s tests -p test_brand_skill.py -v`:
+  10 checks pass. They exercise discovery and selection of two installed skills,
+  real release-tag checks and installation through the release's Node installer,
+  explicit confirmation, moved-tag and companion replacement refusals, writing
+  exclusion during installation, the authenticated page API and the real
+  `studio.py run create --brand fictional --variant dark` command. A saved brand
+  contract survives selection changes, removal of its skill and a second clone.
+- `.venv/bin/python -m unittest discover -s tests -p test_blog_runner.py -v`:
+  all 29 existing runner checks pass.
+- `node scripts/ci/check-management.cjs`: brand repository/release and installed
+  skill forms submit the displayed values; installation runs only after its
+  confirmation sheet; per-blog brand/variant inputs and opting out are exercised.
+- `.venv/bin/python scripts/acceptance/studios-journey.py --run-directory
+  /tmp/blog-brand-studios-journey-20261015 --training-checkout
+  <training-checkout>`: all 41 synthetic CLI commands pass,
+  including team setup, intake, saves/reviews, cross-clone handover, offline
+  retry, readable folders and local-edit protection.
+
+T3's collaborative browser could open the preview but navigation and snapshots
+failed in its automation client, including a fresh tab. Visual browser
+verification is unavailable for this addition; HTTP and DOM coverage above is
+recorded separately.
+
 ## Commands and outcomes
 
 Use the checkout’s Python 3.11+ interpreter (`.venv/bin/python` locally).
