@@ -160,9 +160,15 @@ def report(home=None, sign_in=True):
         else 'Install Git if needed, then set user.name and user.email in your terminal. Repository access uses your existing Git credentials.',
         True,
     )
-    import studios_config
+    # Setup loads this module by path before the skill scripts are on sys.path.
+    import importlib.util
 
-    shared, problem = studios_config.read()
+    spec = importlib.util.spec_from_file_location(
+        'blog_computer_studios_config', Path(__file__).with_name('studios_config.py')
+    )
+    config = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(config)
+    shared, problem = config.read()
     add(
         'studios-config',
         'Shared studios defaults',

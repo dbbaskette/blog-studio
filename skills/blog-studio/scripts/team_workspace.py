@@ -81,6 +81,10 @@ def guard_path(path):
 
 def _learn(root, found, at):
     """A takeover keeps this computer's unshared commits under a private ref before replay."""
+    if gitstate.changed(found):
+        raise ValueError(
+            'Local files changed while checking the repository. Keep them with git before sharing; no work was overwritten.'
+        )
     for folder in root.iterdir():
         if not folder.is_dir() or folder.name.startswith('.'):
             continue
@@ -104,7 +108,8 @@ def refresh(root, push=False):
     found = space(root)
     if not found:
         return {'shared': False, 'notice': 'This is a local writing workspace.'}
-    with support.locked(found.repo / '.git/blog-studio.lock'):
+    held = support.Held(found.repo / '.git/blog-studio.lock')
+    with held:
         changed = gitstate.changed(found)
         if changed:
             raise ValueError(
@@ -112,10 +117,11 @@ def refresh(root, push=False):
                 + ', '.join(changed[:5])
                 + '. Keep them with git before sharing; no local work was overwritten.'
             )
-        report = gitstate.sync(found, push=push, before=lambda at: _learn(root, found, at))
-        with internal():
-            studio.write_json(root / '.team-sync.json', {'share': found.share, 'report': report})
-        return report
+    # Upstream holds this lock only to inspect/replay the clone, never during fetch/push.
+    report = gitstate.sync(found, push=push, before=lambda at: _learn(root, found, at), held=held)
+    with held, internal():
+        studio.write_json(root / '.team-sync.json', {'share': found.share, 'report': report})
+    return report
 
 
 def before(root, ident=None):

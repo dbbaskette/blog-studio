@@ -378,6 +378,40 @@ class TeamPageTests(unittest.TestCase):
             if getattr(httpd, 'team_runner_lock', None) is not None:
                 release_lock(httpd.team_runner_lock)
 
+    def test_fetch_does_not_hold_the_workspace_files_lock(self):
+        import threading
+        import time
+
+        entered, release = threading.Event(), threading.Event()
+        original = support.run
+        failures = []
+
+        def run(repo, *args, **kwargs):
+            if args[:1] == ('fetch',):
+                entered.set()
+                release.wait(5)
+            return original(repo, *args, **kwargs)
+
+        def refresh():
+            try:
+                teams.refresh(self.root)
+            except Exception as exc:
+                failures.append(str(exc))
+
+        with patch.object(support, 'run', side_effect=run):
+            thread = threading.Thread(target=refresh)
+            thread.start()
+            try:
+                self.assertTrue(entered.wait(3))
+                started = time.monotonic()
+                with studio.locked(self.root):
+                    self.assertTrue((self.root / 'hub.json').is_file())
+                self.assertLess(time.monotonic() - started, 1)
+            finally:
+                release.set()
+                thread.join(timeout=10)
+        self.assertFalse(failures)
+
     def test_google_linked_documents_follow_the_same_driver(self):
         import google_drive
 

@@ -13,7 +13,9 @@ companion Training Studio document in PR #68.
   config pre-fill and local precedence, consent, unrelated-byte preservation,
   malformed files and credential refusal; two-clone claims, handover/takeover,
   offline retry, manual sharing, preserved recovery refs, selected migration,
-  HTTP workspace switching, local-edit protection and publication guards.
+  HTTP workspace switching, local-edit protection and publication guards. All
+  11 focused tests pass, including reading while a fetch waits without holding
+  the workspace file lock.
 - All 152 Google regression tests pass after adding shared-layout discovery and
   the driver guard to remote-write entry points. The additional shared-workspace
   Google-driver test passes without contacting Google.

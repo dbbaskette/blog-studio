@@ -107,6 +107,25 @@ def locked(path):
         lock.release()
 
 
+class Held:
+    """A reusable file-lock context for upstream sync's separate read/replay phases."""
+
+    def __init__(self, path):
+        self.path = path
+        self.local = threading.local()
+
+    def __enter__(self):
+        context = locked(self.path)
+        result = context.__enter__()
+        stack = getattr(self.local, 'stack', [])
+        stack.append(context)
+        self.local.stack = stack
+        return result
+
+    def __exit__(self, *args):
+        return self.local.stack.pop().__exit__(*args)
+
+
 class GitError(WorkspaceError):
     """git failed; the message is the line of its output that says why."""
 
