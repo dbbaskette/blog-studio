@@ -145,6 +145,20 @@ def report(home=None, sign_in=True):
             else 'Blog Studio records Hub saves with your Hub identity. Git name and email are only needed for commits you make yourself. Run gh auth status to check Hub access.',
             True,
         )
+    import studios_config
+
+    shared, problem = studios_config.read()
+    add(
+        'studios-config',
+        'Shared studios defaults',
+        'manual' if problem else 'ready',
+        problem
+        or (
+            'Shared defaults loaded.'
+            if shared
+            else 'No shared defaults file; using this studio’s settings.'
+        ),
+    )
     path_python = values.get('python3')
     version = re.search(r'Python (\d+)\.(\d+)', path_python[1]) if path_python else None
     if version and tuple(map(int, version.groups())) < (3, 11):
