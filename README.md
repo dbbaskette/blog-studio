@@ -1,3 +1,5 @@
+> **Blog Studio has moved.** Development, installation, issues, and new releases are now in [Marketing Studio](https://github.com/dbbaskette/marketing-studio/tree/main/studios/blog). Use the [new installers](https://github.com/dbbaskette/marketing-studio/releases/latest). This repository is archived; historical source and release downloads remain available.
+
 ![Blog Studio — Sources → Outline → Draft → Review → Team Library](docs/assets/blog-studio-header.png)
 
 # Blog Studio
